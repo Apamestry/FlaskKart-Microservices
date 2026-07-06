@@ -1,0 +1,171 @@
+version: "3.9"
+
+networks:
+  flaskkart-net:
+    driver: bridge
+
+services:
+
+  # ---------------- Databases (one per stateful service) ----------------
+
+  gateway-db:
+    image: mysql:8.4
+    container_name: gateway-db
+    restart: always
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${GATEWAY_DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${GATEWAY_DB_NAME}
+      MYSQL_USER: ${GATEWAY_DB_USER}
+      MYSQL_PASSWORD: ${GATEWAY_DB_PASSWORD}
+    volumes:
+      - gateway_db_data:/var/lib/mysql
+    networks:
+      - flaskkart-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${GATEWAY_DB_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  view-db:
+    image: mysql:8.4
+    container_name: view-db
+    restart: always
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${VIEW_DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${VIEW_DB_NAME}
+      MYSQL_USER: ${VIEW_DB_USER}
+      MYSQL_PASSWORD: ${VIEW_DB_PASSWORD}
+    volumes:
+      - view_db_data:/var/lib/mysql
+    networks:
+      - flaskkart-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${VIEW_DB_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  cart-db:
+    image: mysql:8.4
+    container_name: cart-db
+    restart: always
+    ports:
+      - "3310:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${CART_DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${CART_DB_NAME}
+      MYSQL_USER: ${CART_DB_USER}
+      MYSQL_PASSWORD: ${CART_DB_PASSWORD}
+    volumes:
+      - cart_db_data:/var/lib/mysql
+    networks:
+      - flaskkart-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${CART_DB_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  buy-db:
+    image: mysql:8.4
+    container_name: buy-db
+    restart: always
+    ports:
+      - "3311:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${BUY_DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${BUY_DB_NAME}
+      MYSQL_USER: ${BUY_DB_USER}
+      MYSQL_PASSWORD: ${BUY_DB_PASSWORD}
+    volumes:
+      - buy_db_data:/var/lib/mysql
+    networks:
+      - flaskkart-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${BUY_DB_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ---------------- Services ----------------
+  # Note: search-service has no database - it's stateless, calling view-service for data.
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    restart: always
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./api-gateway/.env
+    depends_on:
+      gateway-db:
+        condition: service_healthy
+    networks:
+      - flaskkart-net
+
+  view-service:
+    build: ./view-service
+    container_name: view-service
+    restart: always
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./view-service/.env
+    depends_on:
+      view-db:
+        condition: service_healthy
+    networks:
+      - flaskkart-net
+
+  search-service:
+    build: ./search-service
+    container_name: search-service
+    restart: always
+    ports:
+      - "5002:5002"
+    env_file:
+      - ./search-service/.env
+    depends_on:
+      - view-service
+    networks:
+      - flaskkart-net
+
+  cart-service:
+    build: ./cart-service
+    container_name: cart-service
+    restart: always
+    ports:
+      - "5003:5003"
+    env_file:
+      - ./cart-service/.env
+    depends_on:
+      cart-db:
+        condition: service_healthy
+    networks:
+      - flaskkart-net
+
+  buy-service:
+    build: ./buy-service
+    container_name: buy-service
+    restart: always
+    ports:
+      - "5004:5004"
+    env_file:
+      - ./buy-service/.env
+    depends_on:
+      buy-db:
+        condition: service_healthy
+    networks:
+      - flaskkart-net
+
+volumes:
+  gateway_db_data:
+  view_db_data:
+  cart_db_data:
+  buy_db_data:
