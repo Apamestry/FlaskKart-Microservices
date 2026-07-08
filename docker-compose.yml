@@ -117,6 +117,8 @@ services:
     restart: always
     ports:
       - "5001:5001"
+    volumes:
+      - ./view-service:/app
     env_file:
       - ./view-service/.env
     depends_on:
