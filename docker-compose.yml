@@ -133,6 +133,8 @@ services:
     restart: always
     ports:
       - "5002:5002"
+    volumes:
+      - ./search-service:/app
     env_file:
       - ./search-service/.env
     depends_on:
