@@ -1,0 +1,1 @@
+from app.models.cart_item import CartItem  # noqa: F401

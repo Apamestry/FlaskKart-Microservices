@@ -148,6 +148,8 @@ services:
     restart: always
     ports:
       - "5003:5003"
+    volumes:
+      - ./cart-service:/app
     env_file:
       - ./cart-service/.env
     depends_on:
