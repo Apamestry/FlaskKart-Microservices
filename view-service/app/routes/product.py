@@ -101,3 +101,24 @@ def update_stock(product_id):
     db.session.commit()
 
     return jsonify(product.to_dict()), 200
+
+@product_bp.route("/<int:product_id>/restock", methods=["POST"])
+@token_required
+def restock(product_id):
+    """Increments stock by the given quantity. Used by Buy Service to roll
+    back a partially-completed checkout if a later step fails (e.g. Order
+    creation fails after stock was already decremented for some items)."""
+    product = Product.query.get(product_id)
+    if product is None:
+        abort(404, description="Product not found.")
+
+    data = request.get_json(silent=True) or {}
+    quantity = data.get("quantity")
+
+    if not isinstance(quantity, int) or quantity <= 0:
+        return jsonify({"error": "quantity must be a positive integer."}), 400
+
+    product.stock += quantity
+    db.session.commit()
+
+    return jsonify(product.to_dict()), 200
