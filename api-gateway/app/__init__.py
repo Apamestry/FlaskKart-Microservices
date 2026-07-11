@@ -15,7 +15,9 @@ def create_app(config_class=Config):
     from app import models  # noqa: F401
 
     from app.routes.auth import auth_bp
+    from app.routes.proxy import proxy_bp
     app.register_blueprint(auth_bp)
+    app.register_blueprint(proxy_bp)
 
     @app.route("/health")
     def health():
