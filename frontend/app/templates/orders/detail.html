@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Order #{{ order.id }} - FlaskKart{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('order.history') }}" class="btn btn-link ps-0 mb-3">&larr; Back to My Orders</a>
+
+<h1 class="mb-2">Order #{{ order.id }}</h1>
+<p class="text-muted">Placed on {{ order.created_at[:10] }}</p>
+
+<div class="row">
+    <div class="col-md-7">
+        <h5>Items</h5>
+        <table class="table">
+            <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr></thead>
+            <tbody>
+                {% for item in order.items %}
+                <tr>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ "%.2f"|format(item.price_at_purchase) }}</td>
+                    <td>${{ "%.2f"|format(item.subtotal) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h4 class="text-end">Total: ${{ "%.2f"|format(order.total_amount) }}</h4>
+    </div>
+
+    <div class="col-md-5">
+        <h5>Status</h5>
+        <p>
+            Payment: <span class="badge bg-success">{{ order.payment_status }}</span><br>
+            Order: <span class="badge bg-info text-dark">{{ order.order_status }}</span>
+        </p>
+
+        <h5 class="mt-4">Shipped To</h5>
+        <div class="card">
+            <div class="card-body">
+                <p class="mb-1">{{ order.shipping.full_name }}</p>
+                <p class="mb-1">{{ order.shipping.address_line1 }}</p>
+                {% if order.shipping.address_line2 %}<p class="mb-1">{{ order.shipping.address_line2 }}</p>{% endif %}
+                <p class="mb-1">{{ order.shipping.city }}, {{ order.shipping.state }} {{ order.shipping.zip_code }}</p>
+                <p class="mb-0">{{ order.shipping.phone }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

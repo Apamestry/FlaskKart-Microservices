@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Review Your Order - FlaskKart{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Review Your Order</h1>
+
+<div class="row">
+  <div class="col-md-7">
+    <h5>Order Items</h5>
+    <table class="table">
+      <thead><tr><th>Product</th><th>Qty</th><th>Subtotal</th></tr></thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>{{ item.product.name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>${{ "%.2f"|format(item.subtotal) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <h4 class="text-end">Total: ${{ "%.2f"|format(total) }}</h4>
+  </div>
+
+  <div class="col-md-5">
+    <h5>Shipping To</h5>
+    <div class="card">
+      <div class="card-body">
+        <p class="mb-1">{{ shipping.full_name }}</p>
+        <p class="mb-1">{{ shipping.address_line1 }}</p>
+        {% if shipping.address_line2 %}<p class="mb-1">{{ shipping.address_line2 }}</p>{% endif %}
+        <p class="mb-1">{{ shipping.city }}, {{ shipping.state }} {{ shipping.zip_code }}</p>
+        <p class="mb-0">{{ shipping.phone }}</p>
+      </div>
+    </div>
+    <a href="{{ url_for('checkout.shipping') }}" class="btn btn-link ps-0 mt-2">Edit shipping info</a>
+
+    <form method="POST" action="{{ url_for('checkout.place_order') }}">
+      <button type="submit" class="btn btn-primary w-100 mt-3">Confirm &amp; Pay</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

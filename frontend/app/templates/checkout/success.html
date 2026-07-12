@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmed - FlaskKart{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="mb-3">Thank you for your order!</h1>
+    <p class="text-muted">Order #{{ order.id }} has been placed successfully.</p>
+    <p>Total charged: <strong>${{ "%.2f"|format(order.total_amount) }}</strong></p>
+    <a href="{{ url_for('main.home') }}" class="btn btn-primary mt-3">Continue Shopping</a>
+</div>
+
+<div class="modal fade" id="paymentSuccessModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-4">
+      <div class="modal-body">
+        <div class="mb-3" style="font-size: 3rem;">✅</div>
+        <h4>Payment Successful</h4>
+        <p class="text-muted mb-0">Your order has been confirmed.</p>
+      </div>
+      <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal">Great!</button>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const modal = new bootstrap.Modal(document.getElementById("paymentSuccessModal"));
+        modal.show();
+    });
+</script>
+{% endblock %}

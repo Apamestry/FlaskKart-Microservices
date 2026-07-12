@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Shipping Information - FlaskKart{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <h2 class="mb-4">Shipping Information</h2>
+    <form method="POST" novalidate>
+      <div class="mb-3">
+        <label class="form-label">Full Name</label>
+        <input type="text" name="full_name" class="form-control" value="{{ shipping.full_name or '' }}" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Address Line 1</label>
+        <input type="text" name="address_line1" class="form-control" value="{{ shipping.address_line1 or '' }}" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Address Line 2 (optional)</label>
+        <input type="text" name="address_line2" class="form-control" value="{{ shipping.address_line2 or '' }}">
+      </div>
+      <div class="row">
+        <div class="col-md-5 mb-3">
+          <label class="form-label">City</label>
+          <input type="text" name="city" class="form-control" value="{{ shipping.city or '' }}" required>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">State</label>
+          <input type="text" name="state" class="form-control" value="{{ shipping.state or '' }}" required>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">ZIP Code</label>
+          <input type="text" name="zip_code" class="form-control" value="{{ shipping.zip_code or '' }}" required>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Phone Number</label>
+        <input type="text" name="phone" class="form-control" value="{{ shipping.phone or '' }}" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Continue to Review</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

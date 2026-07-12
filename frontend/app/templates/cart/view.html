@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Your Cart - FlaskKart{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Your Cart</h1>
+
+{% if items %}
+<table class="table align-middle">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th style="width: 140px;">Quantity</th>
+            <th>Subtotal</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr class="{{ 'table-warning' if item.unavailable }}">
+            <td>
+                {% if item.unavailable %}
+                    <span class="text-muted">Product no longer available</span>
+                {% else %}
+                    <a href="{{ url_for('main.product_detail', product_id=item.product.id) }}">{{ item.product.name }}</a>
+                {% endif %}
+            </td>
+            <td>{{ "$%.2f"|format(item.product.price) if not item.unavailable else "-" }}</td>
+            <td>
+                {% if not item.unavailable %}
+                <form method="POST" action="{{ url_for('cart.update_item', item_id=item.id) }}" class="d-flex gap-1">
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="0"
+                           class="form-control form-control-sm" style="width: 70px;">
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">Update</button>
+                </form>
+                {% else %}
+                    {{ item.quantity }}
+                {% endif %}
+            </td>
+            <td>${{ "%.2f"|format(item.subtotal) }}</td>
+            <td>
+                <form method="POST" action="{{ url_for('cart.remove_item', item_id=item.id) }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-end">
+    <div class="text-end">
+        <h4>Total: ${{ "%.2f"|format(total) }}</h4>
+        <a href="{{ url_for('checkout.shipping') }}" class="btn btn-primary mt-2">Proceed to Checkout</a>
+    </div>
+</div>
+{% else %}
+<p class="text-muted">Your cart is empty. <a href="{{ url_for('main.home') }}">Browse products</a>.</p>
+{% endif %}
+{% endblock %}
