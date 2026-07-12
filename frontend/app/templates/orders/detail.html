@@ -14,7 +14,7 @@
         <table class="table">
             <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr></thead>
             <tbody>
-                {% for item in order.items %}
+                {% for item in order['items'] %}
                 <tr>
                     <td>{{ item.product_name }}</td>
                     <td>{{ item.quantity }}</td>

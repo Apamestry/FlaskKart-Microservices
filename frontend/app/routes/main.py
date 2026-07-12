@@ -23,6 +23,8 @@ def home():
             resp = api_get("/products")
         if resp.status_code == 200:
             products = resp.json()
+        else:
+            flash("The product catalog is temporarily unavailable. Please try again shortly.", "warning")
 
         cat_resp = api_get("/search/categories")
         if cat_resp.status_code == 200:
